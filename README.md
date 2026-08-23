@@ -17,7 +17,7 @@ arquivos HTML, CSS, fontes e imagens servidos direto do repositório.
 ├── index.html          # a página inteira
 ├── css/style.css       # folha de estilo única
 ├── fonts/              # GohuFont (ver GOHUFONT-LICENSE.txt)
-├── img/                # fundo e ícones
+├── img/                # fundo, ícones e a imagem de preview (og.jpg)
 └── favicon.ico
 ```
 
