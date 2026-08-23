@@ -153,7 +153,25 @@ main {
   overflow-wrap: break-word;
 }
 
-.jid a {
+.room {
+  /* endereço de sala, não pessoal: um degrau abaixo do .jid pra hierarquia
+     ficar JID > sala > email. 22 caracteres, cabem folgados nos 34rem. */
+  font-size: clamp(1.125rem, 5vw, 1.875rem);
+  line-height: 1.2;
+  overflow-wrap: break-word;
+}
+
+.tagline {
+  /* frase de apoio da sala: fica na mesma escala do .hint, cinza, pra ler
+     como legenda do endereço acima e não competir com ele */
+  font-size: clamp(0.8125rem, 2.4vw, 1rem);
+  line-height: 1.4;
+  color: var(--dim);
+  margin-top: 0.75em;
+}
+
+.jid a,
+.room a {
   color: var(--fg);
   text-decoration: none;
   border-bottom: 2px solid rgba(240, 240, 240, 0.25);
@@ -161,7 +179,9 @@ main {
 }
 
 .jid a:hover,
-.jid a:focus-visible {
+.jid a:focus-visible,
+.room a:hover,
+.room a:focus-visible {
   color: var(--purple);
   border-bottom-color: var(--purple);
 }
@@ -228,6 +248,7 @@ a:focus-visible {
 
 @media (prefers-reduced-motion: no-preference) {
   .jid a,
+  .room a,
   .mail a,
   .gatonet,
   .keys summary {
