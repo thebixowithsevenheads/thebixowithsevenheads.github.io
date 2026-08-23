@@ -1,0 +1,244 @@
+@font-face {
+  font-family: 'GohuFontUni';
+  src: url("../fonts/GohuFontUni-Subset.woff2") format("woff2");
+  font-display: swap;
+  /* Subset traçado do GohuFont bitmap: ASCII imprimível + Box Drawing +
+     Block Elements + Braille, tudo na MESMA métrica. Sem unicode-range de
+     propósito — se o espaço caísse numa fonte de fallback, a diferença de
+     largura desalinharia as colunas do fingerprint.
+     Licença: ../fonts/GOHUFONT-LICENSE.txt (WTFPL) */
+}
+
+:root {
+  --fg: #f0f0f0;
+  --dim: #8a8a8a;
+  --accent: #FF9F43;
+  /* roxo da setinha do menu e do hover dos links */
+  --purple: #6D28D9;
+  --mono: 'GohuFontUni', 'Courier New', ui-monospace, monospace;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--mono);
+  /* ligaduras juntariam colunas adjacentes do fingerprint — desligadas */
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "calt" 0;
+  color: var(--fg);
+  background: #000 url("../img/wallhaven-4owx1p.jpg") center center / cover no-repeat fixed;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.25rem;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  z-index: 0;
+  pointer-events: none;
+}
+
+main {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  /* largura definida pela linha mais longa do conteúdo: os 35 caracteres do
+     fingerprint no seu tamanho máximo (24px * 0.545em de avanço ≈ 458px).
+     Em rem, não em ch: ch aqui seria medido no font-size do main (16px), não
+     no do bloco .fp, e a coluna sairia estreita demais. */
+  max-width: 34rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2.25rem, 6vw, 3.5rem);
+}
+
+.label {
+  font-size: clamp(0.75rem, 2.2vw, 1rem);
+  font-weight: normal;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 0.35em;
+  /* letter-spacing adiciona espaço DEPOIS do último caractere, o que joga a
+     linha centralizada meio caractere pra direita — isto compensa */
+  margin-right: -0.16em;
+}
+
+.hint {
+  font-size: clamp(0.8125rem, 2vw, 0.9375rem);
+  color: var(--dim);
+  opacity: 0.75;
+  margin-top: 1.5em;
+}
+
+/* ── menu retrátil das chaves ────────────────────────────────────────────
+   <details>/<summary> puro: abre e fecha sem uma linha de JS. Fica DENTRO
+   da mesma <section> do JID, então as chaves são lidas como pertencentes
+   àquele endereço, e não como um dado solto na página. */
+
+.keys {
+  margin-top: 1.25rem;
+}
+
+.keys summary {
+  /* mata o triângulo nativo (que não é do GohuFont e destoa) — o nosso vem
+     do ::before, que troca de glyph quando o details abre */
+  list-style: none;
+  cursor: pointer;
+  display: inline-block;
+  font-size: clamp(0.875rem, 2.6vw, 1.0625rem);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dim);
+  padding: 0.4em 0.2em;
+}
+
+.keys summary::-webkit-details-marker {
+  display: none;
+}
+
+.keys summary::before {
+  /* ► (25BA) e ▼ (25BC), não ▶ (25B6): esse último está no cmap do subset
+     mas com o glyph VAZIO — renderiza em branco. ▸/▾ nem existem. */
+  content: "\25BA";
+  color: var(--purple);
+  margin-right: 0.6em;
+  font-size: 0.8em;
+}
+
+.keys[open] summary::before {
+  content: "\25BC";
+}
+
+.keys summary:hover,
+.keys summary:focus-visible {
+  color: var(--purple);
+}
+
+.keys-body {
+  padding-top: 1rem;
+}
+
+.sub {
+  font-size: clamp(0.75rem, 2.2vw, 0.9375rem);
+  font-weight: normal;
+  letter-spacing: 0.16em;
+  margin-right: -0.16em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 0.5em;
+}
+
+.sub + .fp {
+  margin-bottom: 1.75rem;
+}
+
+.fp:last-of-type {
+  margin-bottom: 0;
+}
+
+.jid {
+  font-size: clamp(1.375rem, 6.2vw, 2.375rem);
+  line-height: 1.2;
+  /* o JID é uma unidade — nunca quebrar no meio do endereço */
+  overflow-wrap: break-word;
+}
+
+.jid a {
+  color: var(--fg);
+  text-decoration: none;
+  border-bottom: 2px solid rgba(240, 240, 240, 0.25);
+  padding-bottom: 0.08em;
+}
+
+.jid a:hover,
+.jid a:focus-visible {
+  color: var(--purple);
+  border-bottom-color: var(--purple);
+}
+
+.mail {
+  /* 37 caracteres — a linha mais longa da página, mais que o fingerprint.
+     Teto menor que o do .jid pra caber inteira nos 34rem da coluna
+     (34rem / (37 * 0.545em de avanço) ≈ 1.68rem) e manter a hierarquia:
+     JID primeiro, email em seguida. */
+  font-size: clamp(0.8125rem, 4.1vw, 1.625rem);
+  line-height: 1.25;
+  /* rede de segurança: se cair no fallback (Courier New, avanço 0.6em) a
+     linha quebra em vez de estourar a viewport */
+  overflow-wrap: anywhere;
+}
+
+.mail a {
+  color: var(--fg);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(240, 240, 240, 0.25);
+  padding-bottom: 0.08em;
+}
+
+.mail a:hover,
+.mail a:focus-visible {
+  color: var(--purple);
+  border-bottom-color: var(--purple);
+}
+
+.fp {
+  font-family: var(--mono);
+  font-size: clamp(0.75rem, 3.2vw, 1.125rem);
+  /* line-height enxuto mantém as duas linhas lidas como um bloco só */
+  line-height: 1.45;
+  color: var(--fg);
+  /* o <pre> preserva as quebras do HTML: 4 grupos por linha, sempre */
+  white-space: pre;
+  /* em tela estreita o bloco rola em si mesmo em vez de estourar a página */
+  overflow-x: auto;
+  user-select: all;
+}
+
+footer {
+  font-size: clamp(1rem, 3.2vw, 1.375rem);
+}
+
+.gatonet {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.gatonet:hover,
+.gatonet:focus-visible {
+  /* o @gatonet.club fica laranja SEMPRE, hover incluído — é a cor dele.
+     O feedback de hover aqui é só o sublinhado. */
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--purple);
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .jid a,
+  .mail a,
+  .gatonet,
+  .keys summary {
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+}
+
+@media (max-width: 400px) {
+  body {
+    /* em telas muito estreitas cada pixel lateral conta pro fingerprint
+       caber inteiro numa linha só */
+    padding: 2.5rem 0.75rem;
+  }
+}
